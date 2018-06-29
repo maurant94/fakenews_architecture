@@ -11,6 +11,7 @@ contract FiveW {
     enum State { NewlyCreated, ConsensusFiveW, ConsensusTrustiness}
     
     string[] public test; //just for DEBUG
+    uint public testInt;
     
     struct FiveWSentence {
         string whoName;
@@ -152,11 +153,16 @@ contract FiveW {
               uint trustValue = 1;
               //for all string (5w) extracted computeTrustiness, then average, but now do algorithm just one time to test
               //for testing just one
-              for (i = 0; i < list.length; i++) { //OUT OF GAS FIXME
+              for (i = 0; i < list.length; i++) { //OUT OF GAS FIXME algorithm
                 trustValue += computeTrustiness(list[i].whoName,list[i].whereName,list[i].whenName, list[i].whatName, list[i].dativeName);
                 //at the end compute evarage by dividing for lenght
               }
-              trustValue /= i;
+              if (trustValue > i) {
+                  trustValue /= i;
+              } else {
+                  trustValue = 0;
+              }
+              
               //Metainfo meta = news[newsID[hash]]; CURRENT VARIABLE TO BE UPDATED
               news[newsID[hash]].state = State.ConsensusFiveW;
               news[newsID[hash]].trustiness = trustValue;
@@ -168,6 +174,7 @@ contract FiveW {
               }
               //consensus whole meta NO NEED
               //now let's clear
+              
               //delete payloads[hash]; //OUT OF GAS FIXME
               //delete votesRes[hash]; //OUT OF GAS FIXME
               //delete voters[hash]; //OUT OF GAS FIXME
@@ -186,11 +193,11 @@ contract FiveW {
   function computeTrustiness(string who, string where, string when, string what, string dative) internal view returns(uint) { //other 
       uint T = 8000; //treshold for trustiness uint N = T/10; //max num of document to be analyzed
       uint critical = 2000; //critical value (minimum for trusted news)
-      uint accuracy = 8000; //defined as trustiness of document
       
-      while (T > critical) {
+      while (T > critical) { //MANAGE TRUSTINESS SETS
 
-          while (accuracy > 1) {
+          uint accuracy = 8000; //defined as trustiness of document
+          while (accuracy > 3000) { //under 30% no sense
               //compute P(A|Where&When)*P(B|Where&When)*P(Action|Where&When)*P(Action|A)*P(Action|B)
               //LET US DEFINE AN ARRAY OF UINT OTHERWISE STACK TOO DEEP (MAX 16)
               //error DIVISION BY ZERO
@@ -203,7 +210,7 @@ contract FiveW {
               probCount[5] = 0; //countDative
               probCount[6] = 0; //countActioninActor
               probCount[7] = 0; //countActioninDative
-              for (uint i = 0; i < questions.length; i++){
+              for (uint i = 0; i < questions.length; i++){ //to questions.length
                   if (compareStrings(questions[i].whereName,where) &&
                         compareStrings(questions[i].whenName,when) &&
                         questions[i].whereAccuracy >= accuracy &&
@@ -245,11 +252,11 @@ contract FiveW {
                         (probCount[3]/probCount[0])*(probCount[6]/probCount[4])
                         *(probCount[7]/probCount[5])/(DECIMAL**5);
               }
-              accuracy -= 1000;
+              accuracy -= 3000;
           }
-          T -= 1000;
+          T -= 7000; //RESET, AFTER MANAGING TRY TO ADAPT
       }
-      return uint(0);
+      return uint(1); //PROBLEM WITH 0 !!!!!!!!!!!!!!!!!!!!!
   }
   
   function getPayload(string hash) public view returns (byte[]) {
@@ -258,11 +265,11 @@ contract FiveW {
   
   function populateTestFiveW() public {
       FiveWSentence memory fivew;
-      fivew.whereName = "Rome";
-      fivew.whenName = "April";
-      fivew.whoName = "Bob";
-      fivew.dativeName = "Tom";
-      fivew.whatName = "met";
+      fivew.whereName = "a";
+      fivew.whenName = "a";
+      fivew.whoName = "a";
+      fivew.dativeName = "a";
+      fivew.whatName = "a";
       fivew.whenAccuracy = 8000;
       fivew.whereAccuracy = 8000;
       fivew.whoAccuracy = 8000;
