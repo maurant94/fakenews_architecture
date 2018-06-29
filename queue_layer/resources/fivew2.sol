@@ -124,14 +124,13 @@ contract FiveW {
               list[i] = fivew;
       }
       
-      //meta get by hash
-      Metainfo meta = news[newsID[hash]];
+      //meta get by hash directly in if STATEMENT
 
       if (votesRes[hash].length < 2) {
           votesRes[hash].push(0);
           votesRes[hash].push(0);
       }
-      if (sha256(abi.encodePacked(list)) == meta.hash5w) { //check if same 5w already extracted FIXME
+      if (sha256(abi.encodePacked(list)) == news[newsID[hash]].hash5w) { //check if same 5w already extracted FIXME
           test[0] = '1';
           voters[hash].push(msg.sender);
           votesRes[hash][0] = votesRes[hash][0] +1;
