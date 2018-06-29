@@ -64,11 +64,14 @@ contract FiveW {
         uint[] accuracies
         ) public {
             
-      Metainfo storage meta;
-      meta.name = name;
-      meta.hash = hash; //MAYBE COMPUTE - FIXME
-      meta.claim = split(claims,"-");
-      meta.state = State.NewlyCreated;
+      newsID[hash] = newsLen; //increment counter
+      newsLen++;
+
+      // INSTEAD OF DECLARING VARIABLE AND THEN ADD, JUST UPDATE VALUE IN MAPPING!!!
+      news[newsID[hash]].name = name;
+      news[newsID[hash]].hash = hash; //MAYBE COMPUTE - FIXME
+      news[newsID[hash]].claim = split(claims,"-");
+      news[newsID[hash]].state = State.NewlyCreated;
       
       //5w
       string[] memory parts = split5w(meta5w, accuracies);
@@ -86,14 +89,10 @@ contract FiveW {
               fivew.whoAccuracy = accuracies[5*i+2];
               fivew.dativeAccuracy = accuracies[5*i+3];
               fivew.whatAccuracy = accuracies[5*i+4];
-              meta.fiveWMap.push(fivew);
+              news[newsID[hash]].fiveWMap.push(fivew);
               list[i] = fivew;
       }
-      meta.hash5w = sha256(abi.encodePacked(list)); //list used as in memory variable for hash
-      
-      newsID[hash] = newsLen + 1; //increment counter
-      newsLen++;
-      news[newsID[hash]] = meta; //PUT
+      news[newsID[hash]].hash5w = sha256(abi.encodePacked(list)); //list used as in memory variable for hash
       
       payloads[hash] = payloadRes;
       
