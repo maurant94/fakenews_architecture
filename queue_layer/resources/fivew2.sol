@@ -11,7 +11,7 @@ contract FiveW {
     enum State { NewlyCreated, ConsensusFiveW, ConsensusTrustiness}
     
     string[] public test; //just for DEBUG
-    uint public testInt;
+    uint public testInt; //just for DEBUG
     
     struct FiveWSentence {
         string whoName;
@@ -29,8 +29,10 @@ contract FiveW {
         //uint whyAccuracy;
     }
     
-    FiveWSentence[]  questions; //all just for TEST
-    // future work, prepare predefined list of 5w where to add according to trustiness, in order to speed up, but consuming memory
+    FiveWSentence[]  questionsHigh;
+    FiveWSentence[]  questionsLow;
+    // prepare predefined list of 5w where to add according to trustiness, in order to speed up, but consuming memory
+    // future: integrate with second layer -> another list
     
     struct Metainfo { 
         string name;
@@ -39,7 +41,6 @@ contract FiveW {
         FiveWSentence[] fiveWMap;
         string[] claim;
         uint trustiness; //suppose trustiness in % 100,00 so 10^3
-        
         State state;
     }
     
@@ -99,7 +100,8 @@ contract FiveW {
   }
   //FOR TEST:
   /*
-  before populate with start5w : "prova", "reshash",["0x2345"],"claim1-claim2","a#+#b#+#a#+#a#+#a#+##-#a#+#a#+#a#+#a#+#a#+#",[1,1,1,1,1,1,1,1,1,1]
+  before populate with start5w :
+  "prova", "reshash",["0x2345"],"claim1-claim2","a#+#b#+#a#+#a#+#a#+##-#a#+#a#+#a#+#a#+#a#+#",[1,1,1,1,1,1,1,1,1,1]
   now invoke add5w:
   "reshash","a#+#b#+#a#+#a#+#a#+##-#a#+#a#+#a#+#a#+#a#+#",[1,1,1,1,1,1,1,1,1,1]
   */
@@ -164,8 +166,17 @@ contract FiveW {
               //Metainfo meta = news[newsID[hash]]; CURRENT VARIABLE TO BE UPDATED
               news[newsID[hash]].state = State.ConsensusFiveW;
               news[newsID[hash]].trustiness = trustValue;
-              if (trustValue > 2000) { //EXAMPLE 20%
+              if (trustValue > 6000) { //EXAMPLE 60%
                   news[newsID[hash]].state = State.ConsensusTrustiness;
+                  for (i = 0; i < list.length; i++) {
+                    questionsHigh.push(list[i]);
+                  }
+                  //VARIABLE UPDATED OK
+              } else if (trustValue > 2000) { //EXAMPLE 20%
+                  news[newsID[hash]].state = State.ConsensusTrustiness;
+                  for (i = 0; i < list.length; i++) {
+                    questionsLow.push(list[i]);
+                  }
                   //VARIABLE UPDATED OK
               } else {
                  //delete news[newsID[hash]]; //OUT OF GAS FIXME
@@ -191,9 +202,13 @@ contract FiveW {
   function computeTrustiness(string who, string where, string when, string what, string dative) internal view returns(uint) { //other 
       uint T = 8000; //treshold for trustiness uint N = T/10; //max num of document to be analyzed
       uint critical = 2000; //critical value (minimum for trusted news)
-      
+      FiveWSentence[] questions;
       while (T > critical) { //MANAGE TRUSTINESS SETS
-
+          if( T > 7000) {
+              questions = questionsHigh;
+          } else {
+              questions = questionsLow;
+          }
           uint accuracy = 8000; //defined as trustiness of document
           while (accuracy > 3000) { //under 30% no sense
               //compute P(A|Where&When)*P(B|Where&When)*P(Action|Where&When)*P(Action|A)*P(Action|B)
@@ -239,7 +254,7 @@ contract FiveW {
                       }
                   }
               }
-              if (probCount[0] + probCount[4] + probCount[5] > T/100) { //FIXME TRESHOLD VALUE INSTEAD OF 0 (N)
+              if (probCount[0] + probCount[4] + probCount[5] > T/100) { //FIXME TRESHOLD VALUE INSTEAD OF 0 (T/100 tune)
                   //you can end and calculate value (THE FIRST PART INVOLVES ACCURACY)
                   //divide by decimal^num if multiplication
                   if(probCount[0] == 0) return uint(100);
@@ -273,9 +288,8 @@ contract FiveW {
       fivew.whoAccuracy = 8000;
       fivew.dativeAccuracy = 8000;
       fivew.whatAccuracy = 8000;
-      questions.push(fivew);
-      questions.push(fivew);
-      questions.push(fivew);
+      questionsHigh.push(fivew);
+      questionsLow.push(fivew);
   }
   
   function compareStrings (string a, string b) internal pure returns (bool){
