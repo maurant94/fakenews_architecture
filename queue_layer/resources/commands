@@ -1,0 +1,3 @@
+commands:
+solc fivew2.sol --bin --abi --optimize -o ../output_contracts
+web3j solidity generate ./output_contracts/FiveW.bin ./output_contracts/FiveW.abi -o ./src -p it.uniroma1.dis.ethereum
