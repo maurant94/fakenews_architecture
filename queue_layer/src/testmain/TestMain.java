@@ -25,7 +25,7 @@ public class TestMain {
 			for (int i = 0; i < peers; i++)
 				new Peer(byz);
 			
-			byte[] array = new byte[7]; // length is bounded by 7
+			byte[] array = new byte[1]; // length is bounded by 1 due to ethereum
 		    Random r = new Random();
 		    String generatedString;
 			

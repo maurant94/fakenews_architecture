@@ -1,5 +1,11 @@
 package it.uniroma1.dis.ethereum;
 
+import java.math.BigInteger;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
@@ -17,5 +23,22 @@ public class SmartContractManager {
 
 	   
 	   System.out.println(credentials.getAddress());
-}
+	   System.out.println("NOW SOME TEST");
+	   
+
+	   List<byte[]> bytes = new ArrayList<>();
+	   byte[] array = new byte[1]; // length is bounded by 7
+	   Random r = new Random();
+	   String generatedString;
+	   r.nextBytes(array);
+	   generatedString = new String(array, Charset.forName("UTF-8"));
+       //System.arraycopy(byteValue, 0, byteValueLen32, 0, byteValue.length);
+	   bytes.add(generatedString.getBytes());
+	   List<BigInteger> accuracies = new ArrayList<>();
+	   for (int i = 0; i < 10; i++)
+		   accuracies.add(new BigInteger("1"));
+	   contract.startFiveW("prova.pdf", "hashhashhash", bytes, "claims-claims2", "a#+#b#+#a#+#a#+#a#+##-#a#+#a#+#a#+#a#+#a#+#", accuracies);
+   
+	   System.out.println(contract.test(new BigInteger("1")));
+   }
 }
