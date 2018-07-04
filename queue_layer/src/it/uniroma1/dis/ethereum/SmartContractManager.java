@@ -8,7 +8,9 @@ import java.util.Random;
 
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.RemoteCall;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tuples.generated.Tuple5;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
@@ -28,7 +30,7 @@ public class SmartContractManager {
 
 	   List<byte[]> bytes = new ArrayList<>();
 	   byte[] array = new byte[1]; // length is bounded by 7
-	   Random r = new Random();
+	   Random r = new Random(1);
 	   String generatedString;
 	   r.nextBytes(array);
 	   generatedString = new String(array, Charset.forName("UTF-8"));
@@ -36,9 +38,20 @@ public class SmartContractManager {
 	   bytes.add(generatedString.getBytes());
 	   List<BigInteger> accuracies = new ArrayList<>();
 	   for (int i = 0; i < 10; i++)
-		   accuracies.add(new BigInteger("1"));
-	   contract.startFiveW("prova.pdf", "hashhashhash", bytes, "claims-claims2", "a#+#b#+#a#+#a#+#a#+##-#a#+#a#+#a#+#a#+#a#+#", accuracies);
-   
-	   System.out.println(contract.test(new BigInteger("1")));
+		   accuracies.add(BigInteger.ONE);
+	   
+	   contract.startFiveW("prova", "hashhashhash", bytes, "claims-claims2", "a#+#b#+#a#+#a#+#a#+##-#a#+#a#+#a#+#a#+#a#+#", accuracies).send();
+	   System.out.println("START FINISHED");
+	   
+	   contract.getPayload("hashhashhash").send();
+	   for (int i = 0; i < 5; i++)
+		   contract.populateTestFiveW().send();
+	   
+	   contract.add5w("hashhashhash", "a#+#b#+#a#+#a#+#a#+##-#a#+#a#+#a#+#a#+#a#+#", accuracies).send();
+	   System.out.println("FIWADD CALLED");
+	   
+	   Tuple5<String, String, byte[], BigInteger, BigInteger> ret = contract.news(BigInteger.ZERO).send();
+	   
+	   System.out.println(ret);
    }
 }
