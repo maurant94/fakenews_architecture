@@ -84,6 +84,14 @@ public class Data implements Serializable {
 	public void setPayload(Byte[] payload) {
 		this.payload = payload;
 	}
+	
+	public String getClaimAsString() {
+		String claims = "";
+		for (Data d : claim) {
+			claims += d.getHash() + "-";
+		}
+		return claims;
+	}
 
 	@Override
 	public String toString() {

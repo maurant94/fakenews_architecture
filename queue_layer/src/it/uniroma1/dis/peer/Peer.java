@@ -26,6 +26,7 @@ import it.uniroma1.dis.block.Block;
 import it.uniroma1.dis.block.Data;
 import it.uniroma1.dis.block.FiveW;
 import it.uniroma1.dis.block.QueueChain;
+import it.uniroma1.dis.ethereum.SmartContractManager;
 import it.uniroma1.dis.facade.CassandraFacade;
 import it.uniroma1.dis.facade.FiveWExtractor;
 import it.uniroma1.dis.util.StringUtil;
@@ -60,8 +61,12 @@ public class Peer {
 	
 	private QueueChain own_chain;
 	
+	private SmartContractManager manager;
+	
 	public Peer(int byzantine) throws Exception {
 		System.setProperty("java.net.preferIPv4Stack", "true"); // REMEMBER OR IT DOES NOT WORK  !!!!!!!
+		//INITIALIZE SMART CONTRACT MANAGER;
+		manager = new SmartContractManager();
 		BYZANTINE_QUORUM = 3*byzantine; //PBFT
 		CONSENSUS_QUORUM = 1; //INITIAL
 		own_chain = new QueueChain();
@@ -124,6 +129,13 @@ public class Peer {
 							            		//create block
 							            		decided.put(message.getSequence_number(), ERR);
 							            		createBlock(message);
+							            		//BEING A MISMATCH GO TO 1L
+							            		Data dataRow = hystory.get(message.getSequence_number()).getData();
+											try {
+												manager.start5w(dataRow.getName(), dataRow.getHash(), StringUtil.fromObjects(dataRow.getPayload()), dataRow.getClaimAsString(), dataRow.getContent());
+											} catch (Exception e) {
+												e.printStackTrace();
+											}
 							            		TrackMessage reply = TrackMessage.getDecidedResponse(message.getSequence_number(),decided, publicKey.toString(), privateKey, publicKey);
 							            		send(reply);
 							            }
@@ -184,6 +196,14 @@ public class Peer {
 							String hash = hystory.get(message.getSequence_number()).getData().getHash();
 							if (outcome.equals(ACK))
 								c.insertResource(res, hash);
+							else if (outcome.equals(NACK)) { //IN THIS CASE GO TO 1L
+								Data dataRow = hystory.get(message.getSequence_number()).getData();
+								try {
+									manager.start5w(dataRow.getName(), dataRow.getHash(), StringUtil.fromObjects(dataRow.getPayload()), dataRow.getClaimAsString(), dataRow.getContent());
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
 							reply = TrackMessage.getDecidedResponse(message.getSequence_number(),decided, publicKey.toString(), privateKey, publicKey);
 							send(reply);
 						}
@@ -311,7 +331,7 @@ public class Peer {
 			return DUP;
 		
 		//else
-		//TODO NOT PRESENT ID DB, SO CHECK TRUSTINESS - LONG CHAIN
+		//TODO NOT PRESENT ID DB, SO CHECK TRUSTINESS - LONG CHAIN - ADD METHOD IN SMART CONTRACT
 		String hash5W = data.getHash5W();
 		//check if in 2L or 1L, (NO SENSE IN QUEUE) IF PRESENT RETURN ACK
 		return ACK;

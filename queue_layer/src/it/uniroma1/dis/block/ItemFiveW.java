@@ -7,7 +7,7 @@ public class ItemFiveW implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private String name;
-	private double accuracy;
+	private Double accuracy;
 	
 	public ItemFiveW(String name, double accuracy) {
 		this.name = name;
@@ -20,10 +20,10 @@ public class ItemFiveW implements Serializable{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public double getAccuracy() {
+	public Double getAccuracy() {
 		return accuracy;
 	}
-	public void setAccuracy(double accuracy) {
+	public void setAccuracy(Double accuracy) {
 		this.accuracy = accuracy;
 	}
 
