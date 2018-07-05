@@ -247,6 +247,18 @@ public class Peer {
 			e.printStackTrace();
 		}
 	}
+	
+	public void minePending() {
+		//TODO as thread for each res
+		try {
+			List<byte[]> payload = manager.getPayload("hashhashhash"); //TODO - MANAGE GLOBAL VARIABLE FOR NON ACKED RESOURCES AND PERSONAL
+			List<FiveW> fivew = FiveWExtractor.getextractedList(StringUtil.toObjects(payload));
+			manager.add5w("hashhashhash", fivew);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static synchronized Peer getPeer(int consensus) {
         if (instance == null) {
 	        	try {
@@ -330,11 +342,12 @@ public class Peer {
 		else if(cassandra.existHash(data.getHash()))
 			return DUP;
 		
-		//else
-		//TODO NOT PRESENT ID DB, SO CHECK TRUSTINESS - LONG CHAIN - ADD METHOD IN SMART CONTRACT
-		String hash5W = data.getHash5W();
+		//else NOT PRESENT ID DB, SO CHECK TRUSTINESS - LONG CHAIN (TODO)
+		//String hash5W = data.getHash5W();
 		//check if in 2L or 1L, (NO SENSE IN QUEUE) IF PRESENT RETURN ACK
-		return ACK;
+		if (manager.isHashPresent(temp))
+			return ACK;
+		return NACK;
 		
 	}
 	

@@ -2,6 +2,7 @@ package it.uniroma1.dis.util;
 
 import java.security.MessageDigest;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,15 @@ public class StringUtil {
 	}
 	
 	public static Byte[] toObjects(byte[] bytesPrim) {
+	    Byte[] bytes = new Byte[bytesPrim.length];
+	    Arrays.setAll(bytes, n -> bytesPrim[n]);
+	    return bytes;
+	}
+	
+	public static Byte[] toObjects(List<byte[]> bytesList) {
+		byte[] bytesPrim = new byte [bytesList.size()];
+		for (int i = 0; i < bytesList.size(); i++)
+			bytesPrim[i] = bytesList.get(i)[0];
 	    Byte[] bytes = new Byte[bytesPrim.length];
 	    Arrays.setAll(bytes, n -> bytesPrim[n]);
 	    return bytes;
