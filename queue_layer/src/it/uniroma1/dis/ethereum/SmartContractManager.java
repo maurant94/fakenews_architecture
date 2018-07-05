@@ -7,6 +7,7 @@ import java.util.List;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tuples.generated.Tuple5;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
@@ -15,7 +16,7 @@ public class SmartContractManager {
 	private FiveW contract = null;
 
 	public SmartContractManager() {
-		String address = "0xc7f6b5a097f8374490b166a34515f12ddaf624bc"; //FIXME AT THE END WE DEPLOY ONE TIME SO WE KNOW THE ADDRESS
+		String address = "0xf7e63bf6896d8f84c7e95c69fa243ddc45dd9fa8"; //FIXME AT THE END WE DEPLOY ONE TIME SO WE KNOW THE ADDRESS
 		String keyPass = "5c71e8cfae6e0cb8c80602d2f1fc66d1fca5674dd6f2ff05b4908c0156c777c5";
 		Web3j web3j = Web3j.build(new HttpService("http://localhost:7545")); //GANACHE
 		Credentials credentials = Credentials.create(keyPass);
@@ -83,6 +84,27 @@ public class SmartContractManager {
 		System.out.println("START PAYLOAD...");
 		List<byte[]> payload = contract.getPayload("hashhashhash").send();
 		return payload;
+	}
+	
+	public Integer getNewsLen() {
+		try {
+			return contract.newsLen().send().intValue();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return -1;
+		
+	}
+	
+	public String getNewsToCheck(Integer index){
+		try {
+			Tuple5<String, String, byte[], BigInteger, BigInteger> ret = contract.news(new BigInteger(index+"")).send();
+			if (ret.getValue5().intValue() == 1)
+				return ret.getValue2();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public Boolean isHashPresent(List<it.uniroma1.dis.block.FiveW> fivew) {

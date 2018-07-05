@@ -10,8 +10,8 @@ uint DECIMAL = 10000;
 
 enum State { NewlyCreated, ConsensusFiveW, ConsensusTrustiness}
 
-string[] public test; //just for DEBUG
-uint public testInt; //just for DEBUG
+string[] test; //just for DEBUG so public
+uint testInt; //just for DEBUG so public
 
 struct FiveWSentence {
 string whoName;
@@ -45,7 +45,7 @@ State state;
 }
 
 mapping (uint => Metainfo) public news;
-uint newsLen = 0;
+uint public newsLen = 0;
 mapping (string => uint) newsID; //the key hash of metainfo is used for update purpose
 string[] hash5wString;
 
@@ -338,4 +338,3 @@ string[] parts = test;
 return parts;
 }
 }
-

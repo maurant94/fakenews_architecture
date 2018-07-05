@@ -62,6 +62,8 @@ public class Peer {
 	private QueueChain own_chain;
 	
 	private SmartContractManager manager;
+	private List<String> ackedRes = new ArrayList<>();
+	private Integer lastIndex = 0;
 	
 	public Peer(int byzantine) throws Exception {
 		System.setProperty("java.net.preferIPv4Stack", "true"); // REMEMBER OR IT DOES NOT WORK  !!!!!!!
@@ -80,6 +82,22 @@ public class Peer {
 		seq_num = 0;
 		generateKeyPair();
 		channel = new JChannel();//new JChannel("resources/jgroup-config.xml");
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					minePending();
+					//now Busy wait time, then redo
+					try {
+						Thread.sleep(3*1000); //PAUSE 30 SECONDS
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						continue;
+					} 
+				}
+				
+			}
+		}).start(); 
 		channel.setReceiver(new ReceiverAdapter() {
 			public void receive(Message msg) {
 				TrackMessage originalMsg = (TrackMessage)msg.getObject();
@@ -249,14 +267,30 @@ public class Peer {
 	}
 	
 	public void minePending() {
-		//TODO as thread for each res
 		try {
-			List<byte[]> payload = manager.getPayload("hashhashhash"); //TODO - MANAGE GLOBAL VARIABLE FOR NON ACKED RESOURCES AND PERSONAL
-			List<FiveW> fivew = FiveWExtractor.getextractedList(StringUtil.toObjects(payload));
-			manager.add5w("hashhashhash", fivew);
+			Integer len = manager.getNewsLen();
+			if (len != null && len != -1) {
+				for (int i = lastIndex; i < len; i++) {
+					String hash = manager.getNewsToCheck(i);
+					if (hash != null && !isHashAcked(hash)) {
+						List<byte[]> payload = manager.getPayload(hash);
+						List<FiveW> fivew = FiveWExtractor.getextractedList(StringUtil.toObjects(payload));
+						manager.add5w(hash, fivew);
+						ackedRes.add(hash);
+					}
+				}
+				lastIndex = len -1; //UPDATE LAST
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Boolean isHashAcked(String hash) {
+		for(String s: ackedRes)
+			if (s.equals(hash))
+				return true;
+		return false;
 	}
 	
 	public static synchronized Peer getPeer(int consensus) {
