@@ -20,7 +20,8 @@ public class SmartContractTEST {
 		
 		manager.populateTestFiveW(5);
 		
-		manager.add5w("hashhashhash", fivew);
+		Boolean bol = manager.add5w("hashhashhash", fivew);
+		System.out.println(bol);
 		
 		FiveW contract = manager.getContract();
 

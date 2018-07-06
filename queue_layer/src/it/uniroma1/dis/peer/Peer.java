@@ -89,7 +89,7 @@ public class Peer {
 					minePending();
 					//now Busy wait time, then redo
 					try {
-						Thread.sleep(3*1000); //PAUSE 30 SECONDS
+						Thread.sleep(30*1000); //PAUSE 30 SECONDS
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 						continue;
@@ -275,8 +275,14 @@ public class Peer {
 					if (hash != null && !isHashAcked(hash)) {
 						List<byte[]> payload = manager.getPayload(hash);
 						List<FiveW> fivew = FiveWExtractor.getextractedList(StringUtil.toObjects(payload));
-						manager.add5w(hash, fivew);
+						Boolean ret = manager.add5w(hash, fivew);
 						ackedRes.add(hash);
+						if (ret) {
+							//NOW ADD ON CASSANDRA
+							CassandraFacade c = new CassandraFacade();
+							if(!c.existHash(hash))
+								c.insertResource(StringUtil.toArraybytes(payload), hash);
+						}
 					}
 				}
 				lastIndex = len -1; //UPDATE LAST

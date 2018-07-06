@@ -10,6 +10,8 @@ uint DECIMAL = 10000;
 
 enum State { NewlyCreated, ConsensusFiveW, ConsensusTrustiness}
 
+event VoteEvent(string ID, bool returnValue); //for log, so call-back clinet-side
+
 string[] test; //just for DEBUG so public
 uint testInt; //just for DEBUG so public
 
@@ -171,12 +173,14 @@ news[newsID[hash]].state = State.ConsensusTrustiness;
 for (i = 0; i < list.length; i++) {
 questionsHigh.push(list[i]);
 }
+VoteEvent(hash, true);
 //VARIABLE UPDATED OK
 } else if (trustValue > 2000) { //EXAMPLE 20%
 news[newsID[hash]].state = State.ConsensusTrustiness;
 for (i = 0; i < list.length; i++) {
 questionsLow.push(list[i]);
 }
+VoteEvent(hash, true);
 //VARIABLE UPDATED OK
 } else {
 //delete news[newsID[hash]]; //OUT OF GAS FIXME
@@ -189,9 +193,9 @@ questionsLow.push(list[i]);
 //delete voters[hash]; //OUT OF GAS FIXME
 
 }
-
 //now everything is complete, we want just to add the resource do cassandra FIXME
 }
+VoteEvent(hash, false);
 }
 
 /*

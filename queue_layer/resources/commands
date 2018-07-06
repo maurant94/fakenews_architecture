@@ -1,5 +1,5 @@
 commands:
-cd (TO RESOURCE IN GIT QUEUE_FAKE_NEWS)
-solc fivew2.sol --bin --abi --optimize -o ../output_contracts
+cd /Users/antoniomauro/git/queue_fake_news/queue_layer/resources 
+solc fivew2.sol --bin --abi --optimize -o ../output_contracts --overwrite
 cd ..
 web3j solidity generate ./output_contracts/FiveW.bin ./output_contracts/FiveW.abi -o ./src -p it.uniroma1.dis.ethereum

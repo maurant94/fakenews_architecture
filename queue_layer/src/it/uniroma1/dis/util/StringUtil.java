@@ -41,6 +41,13 @@ public class StringUtil {
 	    return bytes;
 	}
 	
+	public static byte[] toArraybytes(List<byte[]> bytesList) {
+		byte[] bytesPrim = new byte [bytesList.size()];
+		for (int i = 0; i < bytesList.size(); i++)
+			bytesPrim[i] = bytesList.get(i)[0];
+	    return bytesPrim;
+	}
+	
 	public static byte[] fromObjects(Byte[] bytes) {
 	    byte[] primByte = new byte[bytes.length];
 	    int j=0;

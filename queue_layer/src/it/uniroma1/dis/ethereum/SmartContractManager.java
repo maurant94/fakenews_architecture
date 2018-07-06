@@ -6,17 +6,20 @@ import java.util.List;
 
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tuples.generated.Tuple5;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
+
+import it.uniroma1.dis.ethereum.FiveW.VoteEventEventResponse;
 
 public class SmartContractManager {
 
 	private FiveW contract = null;
 
 	public SmartContractManager() {
-		String address = "0xf7e63bf6896d8f84c7e95c69fa243ddc45dd9fa8"; //FIXME AT THE END WE DEPLOY ONE TIME SO WE KNOW THE ADDRESS
+		String address = "0xed145b30274280d0b07d7d1501d838a5788a64a6"; //FIXME AT THE END WE DEPLOY ONE TIME SO WE KNOW THE ADDRESS
 		String keyPass = "5c71e8cfae6e0cb8c80602d2f1fc66d1fca5674dd6f2ff05b4908c0156c777c5";
 		Web3j web3j = Web3j.build(new HttpService("http://localhost:7545")); //GANACHE
 		Credentials credentials = Credentials.create(keyPass);
@@ -131,7 +134,7 @@ public class SmartContractManager {
 		
 	}
 	
-	public void add5w(String hash, List<it.uniroma1.dis.block.FiveW> fivew) throws Exception {
+	public Boolean add5w(String hash, List<it.uniroma1.dis.block.FiveW> fivew) throws Exception {
 		System.out.println("START ADD5W...");
 		//list5w
 		String meta5w = ""; //WHERE WHEN WHO DATIVE WHAT order
@@ -161,7 +164,14 @@ public class SmartContractManager {
 			val = fw.getWhat()==null?"0":fw.getWhat().getAccuracy()!=null?((long)(fw.getWhat().getAccuracy()*1000)+""):"0";
 			accuracies.add(new BigInteger(val));
 		}
-		contract.add5w(hash, meta5w, accuracies).send();
+		TransactionReceipt t = contract.add5w(hash, meta5w, accuracies).send();
+		try {
+			return contract.getVoteEventEvents(t).get(0).returnValue;
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+		
 	}
 
 	public void populateTestFiveW(Integer len) throws Exception {
