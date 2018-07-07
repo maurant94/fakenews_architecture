@@ -1,6 +1,9 @@
 package testmain;
 
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Random;
 
 import it.uniroma1.dis.peer.Peer;
@@ -10,9 +13,21 @@ public class TestMain {
 
 	public static void main(String[] args) {
 
-		int byz = 1;
-		int peers = 1;
-		int request = 3;
+		if (args == null || args.length <= 5) {
+			args = new String[7];
+			args[1] = "1";
+			args[2] = "1";
+			args[3] = "3";
+			args[4] = "prova.txt";
+			args[5] = "/Users/antoniomauro/Desktop/test.txt";
+			args[6] = "/Users/antoniomauro/Desktop/test.txt";		
+		}
+		int byz = Integer.parseInt(args[1]);
+		int peers = Integer.parseInt(args[2]);
+		int request = Integer.parseInt(args[3]);
+		String name = args[4];
+		String fileName = args[5];
+		String attacch = args[6];
 		
 		//TEST EXTRACTOR PYTHON
 //		FiveWExtractor.getextractedList(null);
@@ -26,16 +41,14 @@ public class TestMain {
 				new Peer(byz);
 			
 			byte[] array = new byte[1]; // length is bounded by 1 due to ethereum
-		    Random r = new Random();
-		    String generatedString;
+			Path path = Paths.get(fileName);
+			array = Files.readAllBytes(path);
 			
 			for (int i = 0; i < request; i++) {
 				Peer p1;
 				try {
 					p1 = new Peer(byz);
-				    r.nextBytes(array);
-				    generatedString = new String(array, Charset.forName("UTF-8"));
-					p1.start(StringUtil.toObjects(generatedString.getBytes()),"prova.txt");
+					p1.start(StringUtil.toObjects(array),name);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

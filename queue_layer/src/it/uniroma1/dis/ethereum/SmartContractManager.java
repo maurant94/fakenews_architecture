@@ -19,7 +19,7 @@ public class SmartContractManager {
 	private FiveW contract = null;
 
 	public SmartContractManager() {
-		String address = "0xed145b30274280d0b07d7d1501d838a5788a64a6"; //FIXME AT THE END WE DEPLOY ONE TIME SO WE KNOW THE ADDRESS
+		String address = "0xb02cd1e06ac6e3dd6ed32bde4c7f78a17f2a2f98"; //FIXME AT THE END WE DEPLOY ONE TIME SO WE KNOW THE ADDRESS
 		String keyPass = "5c71e8cfae6e0cb8c80602d2f1fc66d1fca5674dd6f2ff05b4908c0156c777c5";
 		Web3j web3j = Web3j.build(new HttpService("http://localhost:7545")); //GANACHE
 		Credentials credentials = Credentials.create(keyPass);
