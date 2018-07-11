@@ -1,11 +1,10 @@
 package testmain;
 
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Random;
 
+import it.uniroma1.dis.block.Data;
 import it.uniroma1.dis.peer.Peer;
 import it.uniroma1.dis.util.StringUtil;
 
@@ -15,9 +14,9 @@ public class TestMain {
 
 		if (args == null || args.length <= 5) {
 			args = new String[7];
-			args[1] = "1";
-			args[2] = "1";
-			args[3] = "3";
+			args[1] = "1"; //byz
+			args[2] = "2"; //peers
+			args[3] = "3"; //request
 			args[4] = "prova.txt";
 			args[5] = "/Users/antoniomauro/Desktop/test.txt";
 			args[6] = "/Users/antoniomauro/Desktop/test.txt";		
@@ -44,8 +43,8 @@ public class TestMain {
 			Path path = Paths.get(fileName);
 			array = Files.readAllBytes(path);
 			
+			Peer p1 = null;
 			for (int i = 0; i < request; i++) {
-				Peer p1;
 				try {
 					p1 = new Peer(byz);
 					p1.start(StringUtil.toObjects(array),name);
@@ -53,6 +52,11 @@ public class TestMain {
 					e.printStackTrace();
 				}
 			}
+			
+//			Thread.sleep(60000);
+//			for (Data d : p1.getChainValues()) {
+//				System.out.println(d);
+//			}
 			
 			
 		} catch (Exception e) {

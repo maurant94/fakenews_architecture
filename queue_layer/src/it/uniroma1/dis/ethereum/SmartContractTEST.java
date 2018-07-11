@@ -25,7 +25,7 @@ public class SmartContractTEST {
 		
 		FiveW contract = manager.getContract();
 
-		Tuple5<String, String, byte[], BigInteger, BigInteger> ret = contract.news(new BigInteger("0")).send();
+		Tuple5<String, String, byte[], BigInteger, BigInteger> ret = contract.news(new BigInteger("4")).send();
 
 		System.out.println(ret);
 	}

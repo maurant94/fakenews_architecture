@@ -382,7 +382,7 @@ public class Peer {
 		else if(cassandra.existHash(data.getHash()))
 			return DUP;
 		
-		//else NOT PRESENT ID DB, SO CHECK TRUSTINESS - LONG CHAIN (TODO)
+		//else NOT PRESENT ID DB, SO CHECK TRUSTINESS - TODO LONG CHAIN
 		//String hash5W = data.getHash5W();
 		//check if in 2L or 1L, (NO SENSE IN QUEUE) IF PRESENT RETURN ACK
 		if (manager.isHashPresent(temp))
@@ -477,6 +477,17 @@ public class Peer {
 		}
 			
 		return true;
+	}
+	
+	public List<Data> getChainValues(){
+		List<Data> datas= new ArrayList<>();
+		if (own_chain.getBlockchain() != null && !own_chain.getBlockchain().isEmpty()) {
+			for(Block b :own_chain.getBlockchain()) {
+				datas.addAll(b.getData());
+			}
+		}
+		return datas;
+		
 	}
 	
 	

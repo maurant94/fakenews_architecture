@@ -79,7 +79,6 @@ public class SmartContractManager {
 			val = fw.getWhat()==null?"0":fw.getWhat().getAccuracy()!=null?((long)(fw.getWhat().getAccuracy()*1000)+""):" ";
 			accuracies.add(new BigInteger(val));
 		}
-		
 		contract.startFiveW(name, hash, bytes, claims, meta5w, accuracies).send();
 	}
 	
