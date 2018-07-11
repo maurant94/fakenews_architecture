@@ -8,13 +8,15 @@ import java.io.File;
 
 public class TestFromSwing {
 	
+	static JFrame frame;
 	static JPanel panel = new JPanel(); // the panel is not visible in output
-
+	static JLabel labelClaims;
+	static JLabel labelFile;
 	
 	public static void main(String args[]) {
 		
 		// Creating the Frame
-		JFrame frame = new JFrame("File INFO");
+		frame = new JFrame("File INFO");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(400, 400);
 		FileContentListener filecontentlistener = new FileContentListener();
@@ -24,12 +26,12 @@ public class TestFromSwing {
 		JLabel labelName = new JLabel("File Name");
 		JTextField tf = new JTextField(20); // accepts upto 20 characters
 
-		JLabel labelClaims = new JLabel("Claims");
+		labelClaims = new JLabel("Claims");
 		JButton button = new JButton("UPLOAD");
 		button.addActionListener(attachlistener);
 		
 
-		JLabel labelFile = new JLabel("File Content");
+		labelFile = new JLabel("File Content");
 		JButton uploadFile = new JButton("UPLOAD");
 		uploadFile.addActionListener(filecontentlistener);
 		
@@ -85,6 +87,7 @@ public class TestFromSwing {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File selectedFile = fc.getSelectedFile();
 				name = selectedFile.getAbsolutePath();
+				labelFile.setText("File Content : " + name);
 			}
 	    }
 
@@ -107,6 +110,7 @@ public class TestFromSwing {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File selectedFile = fc.getSelectedFile();
 				name = selectedFile.getAbsolutePath();
+				labelClaims.setText("Claims : " + name);
 			}
 	    }
 
