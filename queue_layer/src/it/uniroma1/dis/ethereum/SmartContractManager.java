@@ -12,11 +12,10 @@ import org.web3j.tuples.generated.Tuple5;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 
-import it.uniroma1.dis.ethereum.FiveW.VoteEventEventResponse;
-
 public class SmartContractManager {
 
 	private FiveW contract = null;
+	private Whitelist contractVote = null;
 
 	public SmartContractManager() {
 		String address = "0xb02cd1e06ac6e3dd6ed32bde4c7f78a17f2a2f98"; //FIXME AT THE END WE DEPLOY ONE TIME SO WE KNOW THE ADDRESS
@@ -27,6 +26,8 @@ public class SmartContractManager {
 //		try {
 //			contract = FiveW.deploy( web3j, credentials, 
 //					ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT).send();
+//			contractVote = Whitelist.deploy( web3j, credentials, 
+//					ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT).send();
 //			System.out.println(contract.getContractAddress());
 //		} catch (Exception e1) {
 //			contract = null;
@@ -35,6 +36,8 @@ public class SmartContractManager {
 		
 		try {
 			contract = FiveW.load(address, web3j, credentials, 
+					ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+			contractVote = Whitelist.load(address, web3j, credentials, 
 					ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
 			System.out.println("LOADED");
 		} catch (Exception e) {
