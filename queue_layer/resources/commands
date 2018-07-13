@@ -1,5 +1,9 @@
 commands:
 cd /Users/antoniomauro/git/queue_fake_news/queue_layer/resources 
-solc fivew2.sol --bin --abi --optimize -o ../output_contracts --overwrite
+solc fivew.sol --bin --abi --optimize -o ../output_contracts --overwrite
 cd ..
 web3j solidity generate ./output_contracts/FiveW.bin ./output_contracts/FiveW.abi -o ./src -p it.uniroma1.dis.ethereum
+cd /Users/antoniomauro/git/queue_fake_news/queue_layer/resources 
+solc vote.sol --bin --abi --optimize -o ../output_contracts --overwrite
+cd ..
+web3j solidity generate ./output_contracts/Vote.bin ./output_contracts/Vote.abi -o ./src -p it.uniroma1.dis.ethereum
