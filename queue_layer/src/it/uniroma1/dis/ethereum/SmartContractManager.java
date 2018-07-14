@@ -8,6 +8,7 @@ import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tuples.generated.Tuple4;
 import org.web3j.tuples.generated.Tuple5;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
@@ -16,6 +17,9 @@ public class SmartContractManager {
 
 	private FiveW contract = null;
 	private Whitelist contractVote = null;
+	
+	public static final BigInteger ACK_VOTE = new BigInteger("1");
+	public static final BigInteger NACK_VOTE = new BigInteger("0");
 
 	public SmartContractManager() {
 		String address = "0xb02cd1e06ac6e3dd6ed32bde4c7f78a17f2a2f98"; //FIXME AT THE END WE DEPLOY ONE TIME SO WE KNOW THE ADDRESS
@@ -112,6 +116,28 @@ public class SmartContractManager {
 		return null;
 	}
 	
+	public String getNewsAboveTreshold(Integer index){ //USE CASSANDRA CALL AND JUST RETRIEVE PAYLOAD - FIXME
+		try {
+			Tuple5<String, String, byte[], BigInteger, BigInteger> ret = contract.news(new BigInteger(index+"")).send();
+			if (ret.getValue5().intValue() == 2) //CONSENSUS TRUSTINESS
+				return ret.getValue2();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String getNewsToCheck2L(Integer index){
+		try {
+			Tuple4<String, String, BigInteger, BigInteger> ret = contractVote.news(new BigInteger(index+"")).send();
+			if (ret.getValue4().intValue() == 0) //newly added
+				return ret.getValue2();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public Boolean isHashPresent(List<it.uniroma1.dis.block.FiveW> fivew) {
 		String meta5w = ""; //WHERE WHEN WHO DATIVE WHAT order
 		for (it.uniroma1.dis.block.FiveW fw : fivew) {
@@ -180,6 +206,46 @@ public class SmartContractManager {
 		System.out.println("START POPULATE TEST5W...");
 		for (int i = 0; i < len; i++)
 			contract.populateTestFiveW().send();
+	}
+	
+	public void addWhitelistAddress(String address) throws Exception {
+		contractVote.whitelistAddress(address).send();
+	}
+	
+	public void addNewsToCheck(String name, String hash, Double trustiness, String claims, List<it.uniroma1.dis.block.FiveW> fivew) throws Exception {
+		//TODO
+		String meta5w = ""; //WHERE WHEN WHO DATIVE WHAT order
+		List<BigInteger> accuracies = new ArrayList<>();
+		String val;
+		for (it.uniroma1.dis.block.FiveW fw : fivew) {
+			meta5w += fw.getWhere()==null?" ":fw.getWhere().getName()!=null?fw.getWhere().getName():" ";
+			meta5w += "#+#";
+			meta5w += fw.getWhen()==null?" ":fw.getWhen().getName()!=null?fw.getWhen().getName():" ";
+			meta5w += "#+#";
+			meta5w += fw.getWho()==null?" ":fw.getWho().getName()!=null?fw.getWho().getName():" ";
+			meta5w += "#+#";
+			meta5w += fw.getDative()==null?" ":fw.getDative().getName()!=null?fw.getDative().getName():" ";
+			meta5w += "#+#";
+			meta5w += fw.getWhat()==null?" ":fw.getWhat().getName()!=null?fw.getWhat().getName():" ";
+			meta5w += "#+#";
+			meta5w += "#-#"; //OR REMOVE AT THE END SENT
+			
+			val = fw.getWhere()==null?"0":fw.getWhere().getAccuracy()!=null?((long)(fw.getWhere().getAccuracy()*1000)+""):"0";
+			accuracies.add(new BigInteger(val));
+			val = fw.getWhen()==null?"0":fw.getWhen().getAccuracy()!=null?((long)(fw.getWhen().getAccuracy()*1000)+""):"0";
+			accuracies.add(new BigInteger(val));
+			val = fw.getWho()==null?"0":fw.getWho().getAccuracy()!=null?((long)(fw.getWho().getAccuracy()*1000)+""):"0";
+			accuracies.add(new BigInteger(val));
+			val = fw.getDative()==null?"0":fw.getDative().getAccuracy()!=null?((long)(fw.getDative().getAccuracy()*1000)+""):"0";
+			accuracies.add(new BigInteger(val));
+			val = fw.getWhat()==null?"0":fw.getWhat().getAccuracy()!=null?((long)(fw.getWhat().getAccuracy()*1000)+""):"0";
+			accuracies.add(new BigInteger(val));
+		}
+		contractVote.addNewsToCheck(name, hash, claims, meta5w, accuracies, new BigInteger(trustiness.toString())).send();
+	}
+	
+	public void vote(BigInteger vote, String hashResource) throws Exception {
+		contractVote.checkTempNews(vote, hashResource).send();
 	}
 	
 	public FiveW getContract() {

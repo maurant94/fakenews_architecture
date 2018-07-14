@@ -48,7 +48,7 @@ uint whenAccuracy;
 struct Metainfo {
 string name;
 string  hash;
-bytes32 hash5w;
+//bytes32 hash5w; //NO NEED HERE
 FiveWSentence[] fiveWMap;
 string[] claim;
 uint trustiness; //suppose trustiness in % 100,00 so 10^3
@@ -76,7 +76,7 @@ require(userAddr[msg.sender] == true);
 _;
 }
 
-function whitelistAddress (address user) onlyOwner {
+function whitelistAddress (address user) onlyOwner public {
 userAddr[user] = true;
 }
 
@@ -86,7 +86,6 @@ string  hash,
 string claims, //WITH "-" AS DELIMITER FOR STRINGS
 string meta5w,//SEPARATED BY CUSTOM DELIMITER
 uint[] accuracies,
-bytes32 hash5w,
 uint trustiness) onlyWhiteListed {
 
 if (checkScore[hash].exist == true) {
@@ -123,7 +122,6 @@ fivew.whatAccuracy = accuracies[5*i+4];
 news[newsID[hash]].fiveWMap.push(fivew);
 list[i] = fivew;
 }
-news[newsID[hash]].hash5w = hash5w;
 
 //PREPARE STRUCT FOR NEWS TO BE CHECKED
 checkScore[hash].quorum = trustiness / 13; //TUNE PARAMETER
