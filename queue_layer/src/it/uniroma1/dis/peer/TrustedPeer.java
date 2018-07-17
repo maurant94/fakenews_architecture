@@ -34,7 +34,7 @@ public class TrustedPeer {
 				checkpointVal++;
 			}
 			
-			//DATA FROM 1L
+			//DATA FROM 1L   
 			Integer len = manager.getNewsLen();
 			NewsBean bean = null;
 			if (len != null && len != -1) {
