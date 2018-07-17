@@ -4,6 +4,7 @@ import java.util.List;
 
 import it.uniroma1.dis.block.Data;
 import it.uniroma1.dis.block.FiveW;
+import it.uniroma1.dis.ethereum.NewsBean;
 import it.uniroma1.dis.ethereum.SmartContractManager;
 import it.uniroma1.dis.facade.CassandraFacade;
 import it.uniroma1.dis.facade.FiveWExtractor;
@@ -12,21 +13,40 @@ import it.uniroma1.dis.util.StringUtil;
 public class TrustedPeer {
 	
 	private SmartContractManager manager;
-	private Integer lastIndex = 0;
+	private Integer lastIndexVoted = 0; //FOR VOTING
+	private Integer lastIndexRetrieved1L = 0; //for getting from 1L
+	private final Integer checkpointNum = 100;
+	private final Integer checkpointQueue = 80;
+	private Integer checkpointVal = 0;
 	
 	public TrustedPeer() throws Exception {
 		manager = new SmartContractManager();
 	}
 	
-	public void checkpoint() throws Exception {
+	public void checkpoint() throws Exception { //SUPPOSE 80% QUEUE, 20% SMART CONTRACT, UP TO CURRENT AVAILABILITY
 		try {
 			//GET DATA FROM QUEUE
-			Peer p = new Peer(1); //LET'S SIMULATE CALL
+			Peer p = new Peer(1); //FIXME - LET'S SIMULATE CALL
 			List<Data> queueList =  p.getChainValues();
-			//TODO DATA FROM 1L DONE DIRECTLY IN SOLIDITY ?
 			for (Data data: queueList) {
-				manager.addNewsToCheck(data.getName(), data.getHash(), data.getTrustiness(), data.getClaimAsString(), data.getContent());
+				if (checkpointVal == checkpointQueue) break;
+				manager.addNewsToCheck(data.getName(), data.getHash(), data.getTrustiness(), data.getClaimAsString());
+				checkpointVal++;
 			}
+			
+			//DATA FROM 1L
+			Integer len = manager.getNewsLen();
+			NewsBean bean = null;
+			if (len != null && len != -1) {
+				for (int i = lastIndexRetrieved1L; i < len; i++) {
+					if (checkpointVal == checkpointQueue) break;
+					bean = manager.getNewsAboveTreshold(i);
+					manager.addNewsToCheck(bean);
+					checkpointVal++;
+				}
+				lastIndexRetrieved1L = len -1;
+			}
+			
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -39,7 +59,7 @@ public class TrustedPeer {
 		try {
 			Integer len = manager.getNewsLen();
 			if (len != null && len != -1) {
-				for (int i = lastIndex; i < len; i++) {
+				for (int i = lastIndexVoted; i < len; i++) {
 					String hash = manager.getNewsToCheck2L(i);
 					if (hash != null) {
 						if (Math.random() < 0.5) //RANDOM VOTE
@@ -49,7 +69,7 @@ public class TrustedPeer {
 					}
 					
 				}
-				lastIndex = len -1; //UPDATE LAST
+				lastIndexVoted = len -1; //UPDATE LAST
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

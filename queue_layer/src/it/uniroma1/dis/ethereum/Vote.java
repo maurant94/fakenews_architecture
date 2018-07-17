@@ -17,7 +17,7 @@ import org.web3j.tx.TransactionManager;
  * <p>Generated with web3j version 3.4.0.
  */
 public class Vote extends Contract {
-    private static final String BINARY = "6080604052348015600f57600080fd5b5060008054600160a060020a03191633179055603580602f6000396000f3006080604052600080fd00a165627a7a723058209cdf48246322d1c849516fee40d3f7300a49c5e9aebf8bf920457a525caa9c6c0029";
+    private static final String BINARY = "6080604052348015600f57600080fd5b5060008054600160a060020a03191633179055603580602f6000396000f3006080604052600080fd00a165627a7a7230582069dcc7af36d1a2b42b2ce97eab0ae4cad312be7786a8904dec41c59f2cad2ea00029";
 
     protected Vote(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
         super(BINARY, contractAddress, web3j, credentials, gasPrice, gasLimit);

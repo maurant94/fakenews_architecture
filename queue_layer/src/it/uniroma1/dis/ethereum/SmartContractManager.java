@@ -49,6 +49,9 @@ public class SmartContractManager {
 		}
 	}
 
+	/*
+	 * METODH OF 1L, INIT OF TRANSACTION PARAMETERS
+	 */
 	public void start5w(String name, String hash, byte[] payloadRes, String claims, List<it.uniroma1.dis.block.FiveW> fivew) throws Exception {
 		System.out.println("START START5W...");
 		//bytes
@@ -89,12 +92,18 @@ public class SmartContractManager {
 		contract.startFiveW(name, hash, bytes, claims, meta5w, accuracies).send();
 	}
 	
+	/*
+	 * METODH OF 1L, GET PAYLOAD OF RESOURCES TO BE ACKED
+	 */
 	public List<byte[]> getPayload(String resHash) throws Exception {
 		System.out.println("START PAYLOAD...");
 		List<byte[]> payload = contract.getPayload("hashhashhash").send();
 		return payload;
 	}
 	
+	/*
+	 * METODH OF 1L, LEN OF NEWS SAVED
+	 */
 	public Integer getNewsLen() {
 		try {
 			return contract.newsLen().send().intValue();
@@ -105,6 +114,9 @@ public class SmartContractManager {
 		
 	}
 	
+	/*
+	 * METODH OF 1L, GET NEWS, WHICH PAYLOAD HAS TO BE CHECKED
+	 */
 	public String getNewsToCheck(Integer index){
 		try {
 			Tuple5<String, String, byte[], BigInteger, BigInteger> ret = contract.news(new BigInteger(index+"")).send();
@@ -116,17 +128,29 @@ public class SmartContractManager {
 		return null;
 	}
 	
-	public String getNewsAboveTreshold(Integer index){ //USE CASSANDRA CALL AND JUST RETRIEVE PAYLOAD - FIXME
+	/*
+	 * METODH OF 1L, RETRIEVE NEWS AND SEND THEM TO 2L (DONE BY TRUSTEDPEER)
+	 */
+	public NewsBean getNewsAboveTreshold(Integer index){ //USE CASSANDRA CALL AND JUST RETRIEVE PAYLOAD - FIXME
+		NewsBean news = new NewsBean();//FIXME MANAGE CLAIMS
 		try {
 			Tuple5<String, String, byte[], BigInteger, BigInteger> ret = contract.news(new BigInteger(index+"")).send();
-			if (ret.getValue5().intValue() == 2) //CONSENSUS TRUSTINESS
-				return ret.getValue2();
+			if (ret.getValue5().intValue() == 2) { //CONSENSUS TRUSTINESS
+				news.setName(ret.getValue1());
+				news.setHash(ret.getValue2());
+				news.setClaims("TODO-TODO");
+				news.setTrustiness(ret.getValue4());
+				return news;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 	
+	/*
+	 * METODH OF 2L, NEWS TO BE VOTED
+	 */
 	public String getNewsToCheck2L(Integer index){
 		try {
 			Tuple4<String, String, BigInteger, BigInteger> ret = contractVote.news(new BigInteger(index+"")).send();
@@ -138,6 +162,9 @@ public class SmartContractManager {
 		return null;
 	}
 	
+	/*
+	 * METODH OF 1L, CHECK IF META-INFO 5W HAS ALREADY BEEN CHECKED
+	 */
 	public Boolean isHashPresent(List<it.uniroma1.dis.block.FiveW> fivew) {
 		String meta5w = ""; //WHERE WHEN WHO DATIVE WHAT order
 		for (it.uniroma1.dis.block.FiveW fw : fivew) {
@@ -162,6 +189,9 @@ public class SmartContractManager {
 		
 	}
 	
+	/*
+	 * METODH OF 1L, CHECK NEWS IN 1L (ALGORITHM CALL)
+	 */
 	public Boolean add5w(String hash, List<it.uniroma1.dis.block.FiveW> fivew) throws Exception {
 		System.out.println("START ADD5W...");
 		//list5w
@@ -208,42 +238,30 @@ public class SmartContractManager {
 			contract.populateTestFiveW().send();
 	}
 	
+	/*
+	 * METODH OF 2L, WHITELIST
+	 */
 	public void addWhitelistAddress(String address) throws Exception {
 		contractVote.whitelistAddress(address).send();
 	}
 	
-	public void addNewsToCheck(String name, String hash, Double trustiness, String claims, List<it.uniroma1.dis.block.FiveW> fivew) throws Exception {
-		//TODO
-		String meta5w = ""; //WHERE WHEN WHO DATIVE WHAT order
-		List<BigInteger> accuracies = new ArrayList<>();
-		String val;
-		for (it.uniroma1.dis.block.FiveW fw : fivew) {
-			meta5w += fw.getWhere()==null?" ":fw.getWhere().getName()!=null?fw.getWhere().getName():" ";
-			meta5w += "#+#";
-			meta5w += fw.getWhen()==null?" ":fw.getWhen().getName()!=null?fw.getWhen().getName():" ";
-			meta5w += "#+#";
-			meta5w += fw.getWho()==null?" ":fw.getWho().getName()!=null?fw.getWho().getName():" ";
-			meta5w += "#+#";
-			meta5w += fw.getDative()==null?" ":fw.getDative().getName()!=null?fw.getDative().getName():" ";
-			meta5w += "#+#";
-			meta5w += fw.getWhat()==null?" ":fw.getWhat().getName()!=null?fw.getWhat().getName():" ";
-			meta5w += "#+#";
-			meta5w += "#-#"; //OR REMOVE AT THE END SENT
-			
-			val = fw.getWhere()==null?"0":fw.getWhere().getAccuracy()!=null?((long)(fw.getWhere().getAccuracy()*1000)+""):"0";
-			accuracies.add(new BigInteger(val));
-			val = fw.getWhen()==null?"0":fw.getWhen().getAccuracy()!=null?((long)(fw.getWhen().getAccuracy()*1000)+""):"0";
-			accuracies.add(new BigInteger(val));
-			val = fw.getWho()==null?"0":fw.getWho().getAccuracy()!=null?((long)(fw.getWho().getAccuracy()*1000)+""):"0";
-			accuracies.add(new BigInteger(val));
-			val = fw.getDative()==null?"0":fw.getDative().getAccuracy()!=null?((long)(fw.getDative().getAccuracy()*1000)+""):"0";
-			accuracies.add(new BigInteger(val));
-			val = fw.getWhat()==null?"0":fw.getWhat().getAccuracy()!=null?((long)(fw.getWhat().getAccuracy()*1000)+""):"0";
-			accuracies.add(new BigInteger(val));
+	/*
+	 * METODH OF 2L, CHECKPOINT OF NEWS RETRIEVED
+	 */
+	public void addNewsToCheck(String name, String hash, Double trustiness, String claims) throws Exception {
+		contractVote.addNewsToCheck(name, hash, claims, new BigInteger(trustiness.toString())).send();
+	}
+	public void addNewsToCheck(NewsBean bean) throws Exception {
+		if (bean != null && !bean.isEmpty()) {
+			if (bean.getClaims() == null)
+				bean.setClaims("");
+			contractVote.addNewsToCheck(bean.getName(), bean.getHash(), bean.getClaims(), bean.getTrustiness()).send();
 		}
-		contractVote.addNewsToCheck(name, hash, claims, meta5w, accuracies, new BigInteger(trustiness.toString())).send();
 	}
 	
+	/*
+	 * METODH OF 2L, VOTE BY TRUSTEDPEERS
+	 */
 	public void vote(BigInteger vote, String hashResource) throws Exception {
 		contractVote.checkTempNews(vote, hashResource).send();
 	}
