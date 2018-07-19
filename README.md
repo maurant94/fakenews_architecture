@@ -2,7 +2,9 @@
 
 A 2L+ blockchain dealing with fake news' problem
 
-## Stricture
+## Structure
+
+![Project Structure](proj.png)
 
 Under “src” folder we have five main packages and one just for testing the whole architecture:
 
