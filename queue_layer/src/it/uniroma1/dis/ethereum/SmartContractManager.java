@@ -115,6 +115,19 @@ public class SmartContractManager {
 	}
 	
 	/*
+	 * METODH OF 2L, LEN OF NEWS SAVED
+	 */
+	public Integer getNewsLen2() {
+		try {
+			return contractVote.newsLen().send().intValue();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return -1;
+		
+	}
+	
+	/*
 	 * METODH OF 1L, GET NEWS, WHICH PAYLOAD HAS TO BE CHECKED
 	 */
 	public String getNewsToCheck(Integer index){
@@ -131,7 +144,7 @@ public class SmartContractManager {
 	/*
 	 * METODH OF 1L, RETRIEVE NEWS AND SEND THEM TO 2L (DONE BY TRUSTEDPEER)
 	 */
-	public NewsBean getNewsAboveTreshold(Integer index){ //USE CASSANDRA CALL AND JUST RETRIEVE PAYLOAD - FIXME
+	public NewsBean getNewsAboveTreshold(Integer index){ //USE CASSANDRA CALL AND JUST RETRIEVE PAYLOAD
 		NewsBean news = new NewsBean();//FIXME MANAGE CLAIMS
 		try {
 			Tuple5<String, String, byte[], BigInteger, BigInteger> ret = contract.news(new BigInteger(index+"")).send();
@@ -155,6 +168,20 @@ public class SmartContractManager {
 		try {
 			Tuple4<String, String, BigInteger, BigInteger> ret = contractVote.news(new BigInteger(index+"")).send();
 			if (ret.getValue4().intValue() == 0) //newly added
+				return ret.getValue2();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/*
+	 * METODH OF 2L, NEWS VOTED
+	 */
+	public String getNewsAcked2L(Integer index){
+		try {
+			Tuple4<String, String, BigInteger, BigInteger> ret = contractVote.news(new BigInteger(index+"")).send();
+			if (ret.getValue4().intValue() == 1) //newly added
 				return ret.getValue2();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -266,6 +293,33 @@ public class SmartContractManager {
 		contractVote.checkTempNews(vote, hashResource).send();
 	}
 	
+	/*
+	 * METODH OF 1L-2L, GET NEWS IN LOOP IN 2L THEN IN 1L
+	 */
+	public Double getNewsTrustiness(String hashResource) throws Exception {
+		//CHECK IN 2L first
+		Integer len = getNewsLen();
+		String hash = null;
+		for (Integer i = 0; i < len; i++) {
+			hash = getNewsAcked2L(i);
+			if (hash.equals(hashResource))
+				return 100.0; // in 2L ACK OR NACK
+		}
+		
+		//CHECK IN 1L
+		len = getNewsLen();
+		NewsBean bean = null;
+		for (Integer i = 0; i < len; i++) {
+			bean = getNewsAboveTreshold(i);
+			if (bean.getHash().equals(hashResource))
+				return (Double)(bean.getTrustiness().intValue() / 100.0); // in ethereum expressed without decimal
+		}
+		
+		//IF NOT FOUND, FAKSE BY DEFAULT
+		return 0.0;
+	}
+	
+	//get contract 1L
 	public FiveW getContract() {
 		return contract;
 	}
