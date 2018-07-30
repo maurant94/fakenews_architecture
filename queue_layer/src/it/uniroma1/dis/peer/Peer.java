@@ -480,7 +480,7 @@ public class Peer {
 	}
 	
 	public List<Data> getChainValues(){
-		List<Data> datas= new ArrayList<>();
+		List<Data> datas = new ArrayList<>();
 		if (own_chain.getBlockchain() != null && !own_chain.getBlockchain().isEmpty()) {
 			for(Block b :own_chain.getBlockchain()) {
 				datas.addAll(b.getData());
@@ -488,6 +488,21 @@ public class Peer {
 		}
 		return datas;
 		
+	}
+	
+	//INTERFACE FOR CHECKING A NEWS - IT EXISTS OR NOT 
+	public Double retrieveNewsScore(String hash) {
+		List<Data> datas = getChainValues();
+		for (Data d : datas) {
+			if (d.getHash().equals(hash))
+				return d.getTrustiness(); //FIXME, IT IS IN THE QUEUE, MAYBE DIFFERENT
+		}
+		try { //IN 1-2 LAYER
+			return manager.getNewsTrustiness(hash);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0.0;
+		}
 	}
 	
 	
