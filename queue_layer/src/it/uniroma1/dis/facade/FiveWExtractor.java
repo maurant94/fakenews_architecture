@@ -35,7 +35,7 @@ public class FiveWExtractor {
 			
 			if (outputString.indexOf("[{") > -1 && outputString.indexOf("}]") > -1)
 				outputString = outputString.substring(outputString.indexOf("[{"), outputString.indexOf("}]")+1);
-			else System.err.println("failure");
+			//else System.err.println("failure");
 			
 
 			outputString = "[{\"whoName\": \"Carl \", \"whoScore\": 50, \"whenName\": \"Friday  - \", \"whenScore\": 16.0, \"whereName\": \"Naples \", \"whereScore\": 50, \"whatName\": \"hat.02\", \"whatScore\": 50, \"dativeName\": \"Jhon\", \"dativeScore\": 50}, {\"whoName\": \"Alice \", \"whoScore\": 50, \"whenName\": \"Friday  - \", \"whenScore\": 16.0, \"whatName\": \"sleep_together.01\", \"whatScore\": 50, \"dativeName\": \"Bob\", \"dativeScore\": 50}]";

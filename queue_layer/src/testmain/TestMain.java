@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 
 import it.uniroma1.dis.block.Data;
 import it.uniroma1.dis.peer.Peer;
+import it.uniroma1.dis.peer.TrustedPeer;
 import it.uniroma1.dis.util.StringUtil;
 
 public class TestMain {
@@ -53,7 +54,9 @@ public class TestMain {
 				}
 			}
 			
-//			Thread.sleep(60000);
+			Thread.sleep(6000);
+			TrustedPeer t = new TrustedPeer();
+			t.checkpoint();
 //			for (Data d : p1.getChainValues()) {
 //				System.out.println(d);
 //			}

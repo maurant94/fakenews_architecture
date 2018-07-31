@@ -22,6 +22,7 @@ public class SmartContractManager {
 	public static final BigInteger NACK_VOTE = new BigInteger("0");
 
 	public SmartContractManager() {
+		String addressVote = "0x8659e544dd138c2ebf3cdfcb4ee44e1d1927ab4f";
 		String address = "0xb02cd1e06ac6e3dd6ed32bde4c7f78a17f2a2f98"; //FIXME AT THE END WE DEPLOY ONE TIME SO WE KNOW THE ADDRESS
 		String keyPass = "5c71e8cfae6e0cb8c80602d2f1fc66d1fca5674dd6f2ff05b4908c0156c777c5";
 		Web3j web3j = Web3j.build(new HttpService("http://localhost:7545")); //GANACHE
@@ -33,6 +34,7 @@ public class SmartContractManager {
 //			contractVote = Whitelist.deploy( web3j, credentials, 
 //					ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT).send();
 //			System.out.println(contract.getContractAddress());
+//			System.out.println(contractVote.getContractAddress());
 //		} catch (Exception e1) {
 //			contract = null;
 //			e1.printStackTrace();
@@ -41,7 +43,7 @@ public class SmartContractManager {
 		try {
 			contract = FiveW.load(address, web3j, credentials, 
 					ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-			contractVote = Whitelist.load(address, web3j, credentials, 
+			contractVote = Whitelist.load(addressVote, web3j, credentials, 
 					ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
 			System.out.println("LOADED");
 		} catch (Exception e) {
@@ -276,7 +278,12 @@ public class SmartContractManager {
 	 * METODH OF 2L, CHECKPOINT OF NEWS RETRIEVED
 	 */
 	public void addNewsToCheck(String name, String hash, Double trustiness, String claims) throws Exception {
-		contractVote.addNewsToCheck(name, hash, claims, new BigInteger(trustiness.toString())).send();
+		if (trustiness < 0) trustiness = 0.0; //FIX ERROR BEING UINT IN ETH
+		trustiness *= 100;
+		Integer trustinessValue = trustiness.intValue();
+		trustinessValue *= 100; //ETHEREUM DOUBLE FORMAT
+		BigInteger b = new BigInteger(trustinessValue.toString());
+		contractVote.addNewsToCheck(name, hash, claims, b).send();
 	}
 	public void addNewsToCheck(NewsBean bean) throws Exception {
 		if (bean != null && !bean.isEmpty()) {

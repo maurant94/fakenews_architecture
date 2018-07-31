@@ -100,6 +100,18 @@ public class Peer {
 		}).start(); 
 		channel.setReceiver(new ReceiverAdapter() {
 			public void receive(Message msg) {
+				//SYNCH DATA BLOCKCHAIN-QUEUE
+				if (msg.getObject() instanceof String && ((String)msg.getObject()).equals("SYNCH")) {
+					if (channel.address().equals(leaderAddress)) {
+						//ONLY LEADER
+						try {
+							channel.send(msg.getSrc(), getChainValues());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					return; //end here
+				}
 				TrackMessage originalMsg = (TrackMessage)msg.getObject();
 				TrackMessage message = TrackMessage.decrypt(originalMsg.getSecKeyAES(), originalMsg.getEncrytped_message(), originalMsg.getDecryptKey());
 				TrackMessage reply = null;
