@@ -6,7 +6,8 @@ FiveWExtractor -> Use temp file for passing the content of text whose 5W needs
 FiveW -> Calculate list hash, used SHA256, it may be changed whit a lighter approach
 SmartContractManager -> The address were we deploy is know after contract's deployment
 SmartContractManager -> Manage claims in checkpoint TODO - FUTURE WORK
-Peer -> Send a message create after creating a block, IDEA NOT CHANGING PROTOCOL, 		everybody creates its own in memory storage chain, ONLY LEADER IS
+Peer -> Send a message create after creating a block, IDEA NOT CHANGING PROTOCOL, 
+	everybody creates its own in memory storage chain, ONLY LEADER IS
 	CONTACTED IN CHECKPOINT BY THE TRUSTED PEER
 Peer -> Trustiness of news in queue, MAYBE EQUAL TO THE ONE THAT MATCHES ? 
 	TODO FUTURE WORK
