@@ -1,0 +1,41 @@
+###########################
+# QUEUE ###################
+###########################
+FiveWExtractor -> Use temp file for passing the content of text whose 5W needs
+		  to be extracted. Instead of command line.
+FiveW -> Calculate list hash, used SHA256, it may be changed whit a lighter approach
+SmartContractManager -> The address were we deploy is know after contract's deployment
+SmartContractManager -> Manage claims in checkpoint TODO - FUTURE WORK
+Peer -> Send a message create after creating a block, IDEA NOT CHANGING PROTOCOL, 		everybody creates its own in memory storage chain, ONLY LEADER IS
+	CONTACTED IN CHECKPOINT BY THE TRUSTED PEER
+Peer -> Trustiness of news in queue, MAYBE EQUAL TO THE ONE THAT MATCHES ? 
+	TODO FUTURE WORK
+Peer -> LONG CAHIN in lucky case, for now skipped, checked only ACK and DUPLICATE
+
+Other parameters to Tune in PEER:
+Timer for creating block
+Number of rows per block
+Timer for Byzantine mismatch
+
+Other parameters to Tune in TRUSTED PEER:
+Read from queue and 1L in checkpoint (now 80-20 %)
+
+
+###########################
+# FIRST LAYER #############
+###########################
+Delete payload and empty vote struct after consensus 5w : OUT OF GAS ERROR
+Manage case in which after consensus algorithm we have 0 count for what, where,...
+	MAYBE use arbitrary return value to be managed or SMOOTHING
+
+Parameters to tune:
+Consensus 5w quorum : MAYBE BASED ON VOTER AND TIME
+Queue struct for high and low trustiness (ex. 60 % and 20 %)
+Threshold of number of documents to be analyzed in algorithm
+
+###########################
+# SECOND LAYER ############
+###########################
+Whitelist : First is owner for now, the one that can add others
+Trusted member may add others ? FOR NOW NOT
+
