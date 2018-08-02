@@ -1,6 +1,7 @@
 ###########################
 # QUEUE ###################
 ###########################
+Interface where start, maybe add interface to check
 FiveWExtractor -> Use temp file for passing the content of text whose 5W needs
 		  to be extracted. Instead of command line.
 FiveW -> Calculate list hash, used SHA256, it may be changed whit a lighter approach
