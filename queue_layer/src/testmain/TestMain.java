@@ -15,9 +15,9 @@ public class TestMain {
 
 		if (args == null || args.length <= 5) {
 			args = new String[7];
-			args[1] = "1"; //byz
-			args[2] = "2"; //peers
-			args[3] = "3"; //request
+			args[1] = "2"; //byz
+			args[2] = "7"; //peers
+			args[3] = "1"; //request
 			args[4] = "prova.txt";
 			args[5] = "/Users/antoniomauro/Desktop/test.txt";
 			args[6] = "/Users/antoniomauro/Desktop/test.txt";		

@@ -10,6 +10,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -61,6 +62,11 @@ public class Peer {
 	
 	private QueueChain own_chain;
 	
+	/*
+	 * FOR TEST
+	 */
+	Date startDate = new Date();
+	
 	private SmartContractManager manager;
 	private List<String> ackedRes = new ArrayList<>();
 	private Integer lastIndex = 0;
@@ -78,6 +84,7 @@ public class Peer {
 		blockCreatorTimer = null;
 		inProgressBlock = new ArrayList<>();
 		speculativeResponse = new HashMap<>();
+		startDate = new Date(); //TEST purpose
 		//VIEW MANAGED BY JGROUP
 		seq_num = 0;
 		generateKeyPair();
@@ -148,7 +155,7 @@ public class Peer {
 									try {
 							            //assuming it takes 3 secs to complete the task
 										TrackMessage tempMsg = message; //override
-							            Thread.sleep(3*1000);
+							            Thread.sleep(30*1000);
 							            if (timers.get(tempMsg.getSequence_number()) != null) {
 							            		// OTHERWISE TIMER ALREADY STOPPED
 							            		timers.get(tempMsg.getSequence_number()).cancel();
@@ -191,13 +198,14 @@ public class Peer {
 							temp.put(t.getOutcome_response(), temp.get(t.getOutcome_response()) +1);
 						boolean consensus_reached = false;
 						String outcome = null;
+						Long tempTime = (new Date()).getTime() - startDate.getTime();
 						if (temp.get(ACK) > BYZANTINE_QUORUM) {
 							System.out.println("CONSENSUS ACK !!!");
 							outcome = ACK;
 							consensus_reached = true;
 						}
 						else if (temp.get(NACK) > BYZANTINE_QUORUM) {
-							System.out.println("CONSENSUS NACK !!!");
+							System.out.println("CONSENSUS NACK !!!" + tempTime);
 							outcome = NACK;
 							consensus_reached = true;
 						}
@@ -360,6 +368,7 @@ public class Peer {
 	
 	//START OPERATION
 	public void start(Byte[] resource, String name) {
+		startDate = new Date();
 		TrackMessage t = TrackMessage.getRequest(resource, name, publicKey.toString(), privateKey, publicKey);
 		if (t!= null)
 			sendToLeader(t);
@@ -430,12 +439,13 @@ public class Peer {
 		Data dataRow = hystory.get(message.getSequence_number()).getData();
 		inProgressBlock.add(dataRow);
 		Block block;
+		Long temp = (new Date()).getTime() - startDate.getTime();
 		if (inProgressBlock.size() == QueueChain.BLOCK_LEN) {
 			if (!own_chain.getBlockchain().isEmpty())
 				block = new Block(inProgressBlock, own_chain.getBlockchain().get(own_chain.getBlockchain().size() -1).getHash());
 			else block = new Block(inProgressBlock, null);
 			if (own_chain.addBlock(block))
-				System.out.println("***Block created***" + own_chain.getBlockchain().size() + "***" + message.getType());
+				System.out.println("***Block created***" + own_chain.getBlockchain().size() + "***" + message.getType() + "***" + temp);
 
 			if (blockCreatorTimer != null) {
 				blockCreatorTimer.cancel();
@@ -462,7 +472,7 @@ public class Peer {
 								block = new Block(inProgressBlock, own_chain.getBlockchain().get(own_chain.getBlockchain().size() -1).getHash());
 							else block = new Block(inProgressBlock, null);
 							if (own_chain.addBlock(block))
-								System.out.println("***Block created***" + own_chain.getBlockchain().size() + "***" + message.getType());
+								System.out.println("***Block created***" + own_chain.getBlockchain().size() + "***" + message.getType()+ "***" + temp);
 
 							inProgressBlock = new ArrayList<>();
 							//FIXME SEND A MESSAGE CREATE ? 
